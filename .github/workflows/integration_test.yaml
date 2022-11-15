@@ -150,6 +150,9 @@ jobs:
             series="--series ${{ matrix.series }}"
           fi
           tox -e integration -- --model testing $series $args ${{ inputs.extra-arguments }}
+      - name: Setup tmate session
+        if: $
+        uses: mxschmitt/action-tmate@v3
       - name: Dump logs
         uses: canonical/charm-logdump-action@main
         if: failure()
