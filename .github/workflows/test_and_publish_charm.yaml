@@ -89,7 +89,7 @@ jobs:
     secrets: inherit
   release-charm-libs:
     name: Release charm libs
-    uses: canonical/charming-actions/release-libraries@2.2.2
+    uses: canonical/charming-actions/release-libraries@2.1.1
     needs: [ lib-check, tests, integration-tests ]
     with:
       credentials: ${{ secrets.CHARMHUB_TOKEN }}
