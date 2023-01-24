@@ -52,10 +52,21 @@ on:
         description: Trivy YAML configuration for image testing that is checked in as part of the repo
 
 jobs:
-  tests:
-    name: Run tests
-    uses: ./.github/workflows/test.yaml
-    secrets: inherit
+  lib-check:
+    # This job is the precondition of all jobs that need the Charmhub token.
+    # By disabling this job on forked repositories, we can achieve
+    # disabling the publishing to Charmhub action on forked repositories
+    # while still running tests on push events
+    if: github.repository_owner == 'canonical'
+    name: Check libraries
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check libs
+        uses: canonical/charming-actions/check-libraries@2.2.1
+        with:
+          credentials: ${{ secrets.CHARMHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
   integration-tests:
     name: Run integration tests
     uses: ./.github/workflows/integration_test.yaml
