@@ -71,13 +71,22 @@ jobs:
     name: Run tests
     uses: ./.github/workflows/test.yaml
     secrets: inherit
-  release-charm-libs:
-    name: Release charm libs
-    uses: canonical/charming-actions/release-libraries@2.2.1
-    needs: [ lib-check, tests, integration-tests ]
+  integration-tests:
+    name: Run integration tests
+    uses: ./.github/workflows/integration_test.yaml
     with:
-      credentials: ${{ secrets.CHARMHUB_TOKEN }}
-      github-token: ${{ secrets.GITHUB_TOKEN }}
+      extra-arguments: ${{ inputs.integration-test-extra-arguments }}
+      extra-test-matrix: ${{ inputs.integration-test-extra-test-matrix }}
+      pre-run-script: ${{ inputs.integration-test-pre-run-script }}
+      provider: ${{ inputs.integration-test-provider }}
+      series: ${{ inputs.integration-test-series }}
+      modules: ${{ inputs.integration-test-modules }}
+      setup-devstack-swift: ${{ inputs.setup-devstack-swift }}
+      trivy-fs-config: ${{ inputs.trivy-fs-config }}
+      trivy-fs-enabled: ${{ inputs.trivy-fs-enabled }}
+      trivy-fs-ref: ${{ inputs.trivy-fs-ref }}
+      trivy-image-config: ${{ inputs.trivy-image-config }}
+    secrets: inherit
   select-channel:
     name: Select target channel
     runs-on: ubuntu-22.04
