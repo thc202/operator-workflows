@@ -208,9 +208,6 @@ jobs:
     if: ${{ !failure() }}
     steps:
       - uses: actions/checkout@v3
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ inputs.debug_enabled }}
       - name: Setup Devstack Swift
         if: ${{ inputs.setup-devstack-swift }}
         id: setup-devstack-swift
@@ -296,6 +293,9 @@ jobs:
           APP_NS: ${{ inputs.chaos-app-namespace }}
           CHAOS_NAMESPACE: ${{ inputs.chaos-namespace }}
           INSTALL_LITMUS: true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ inputs.debug_enabled }}
       - name: Run Litmus Chaos experiments
         if: ${{ inputs.chaos-enabled }}
         uses: merkata/github-chaos-actions@feat/run-multiple-scenarios
