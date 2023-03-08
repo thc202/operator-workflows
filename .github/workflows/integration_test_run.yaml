@@ -170,6 +170,7 @@ jobs:
         uses: charmed-kubernetes/actions-operator@main
         with:
           provider: ${{ inputs.provider }}
+          juju-channel: 3.1/edge
       - name: Enable microk8s registry
         if: ${{ inputs.provider == 'microk8s' && github.event.pull_request.head.repo.fork }}
         run: |
