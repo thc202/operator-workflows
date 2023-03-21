@@ -36,11 +36,20 @@ jobs:
     with:
       working-directory: 'tests/workflows/integration/simple/'
       trivy-image-config: 'tests/workflows/integration/simple/trivy.yaml'
-  publish:
-    uses: ./.github/workflows/test_and_publish_charm.yaml
+  integration-rock:
+    uses: ./.github/workflows/integration_test.yaml
     secrets: inherit
     needs:
       - integration
+    with:
+      working-directory: 'tests/workflows/integration/test-rock/'
+      trivy-image-config: 'tests/workflows/integration/test-rock/trivy.yaml'
+  publish:
+    if: ${{ !github.event.pull_request.head.repo.fork }}
+    uses: ./.github/workflows/test_and_publish_charm.yaml
+    secrets: inherit
+    needs:
+      - integration-rock
     with:
       working-directory: tests/workflows/integration/test-upload-charm/
       trivy-image-config: 'tests/workflows/integration/test-upload-charm/trivy.yaml'
@@ -53,6 +62,7 @@ jobs:
       - metadata_yaml
       - dockerfile
       - integration
+      - integration-rock
       - publish
     steps:
       - run: |
@@ -65,4 +75,5 @@ jobs:
           [ '${{ needs.dockerfile.outputs.metadata-lint-outcome }}' = 'skipped' ] || (echo metadata-lint not skipped && false)
           [ '${{ needs.dockerfile.outputs.docker-lint-outcome }}' = 'success' ] || (echo docker-lint failed && false)
           [ '${{ needs.integration.result }}' = 'success' ] || (echo integration failed && false)
-          [ '${{ needs.publish.result }}' = 'success' ] || (echo publish failed && false)
+          [ '${{ needs.integration-rock.result }}' = 'success' ] || (echo integration-rock failed && false)
+          [ '${{ needs.publish.result }}' != 'failure' ] || (echo publish failed && false)
